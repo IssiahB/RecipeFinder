@@ -35,7 +35,34 @@ async function createUser(username, password) {
     }
   }
 
+async function findUserById(givenId) {
+    try {
+        const user = await User.findOne({
+            where: {
+                id: givenId
+            }
+        });
+        return user;
+    } catch (error) {
+        console.log('Error finding user by id: ', error);
+        return null;
+    }
+}
+
+async function findUserByUsername(givenUsername) {
+    try {
+        const user = await User.findOne({
+            where: {
+                username: givenUsername
+            }
+        });
+        return user;
+    } catch (error) {
+        console.log('Error finding user by username: ', error);
+        return null;
+    }
+}
 
 module.exports = {
-    User, createUser
+    User, createUser, findUserById, findUserByUsername
 };
