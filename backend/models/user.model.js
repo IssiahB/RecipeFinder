@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
-const connection = require('./connection.js');
+const sequelize = require('./connection.js');
 
-const User = connection.define('users', {
+const User = sequelize.define('users', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -18,10 +18,18 @@ const User = connection.define('users', {
     }
 });
 
+async function createUserTable() {
+    try {
+        await connection.sync();
+        console.log('Database synchronized');
+    } catch (error) {
+        console.log('Error synchronizing database: ', error);
+    }
+}
+
 async function createUser(username, password) {
     try {
-      await connection.sync();
-      console.log('Database synchronized');
+      await createUserTable();
   
       const user = await User.create({
         username: username,
@@ -51,12 +59,17 @@ async function findUserById(givenId) {
 
 async function findUserByUsername(givenUsername) {
     try {
-        const user = await User.findOne({
-            where: {
-                username: givenUsername
-            }
-        });
-        return user;
+        const query = `SELECT * FROM users WHERE username = '${givenUsername}'`;
+        const [users, _] = await sequelize.query(query, { type: sequelize.QueryTypes.SELECT });
+        if (!users || users.length === 0) {
+            return null; // User not found
+        }
+        
+        if (Array.isArray(users)) {
+            return users[0]; // Return the first user found
+        }
+
+        return users // Return the one user object found
     } catch (error) {
         console.log('Error finding user by username: ', error);
         return null;
