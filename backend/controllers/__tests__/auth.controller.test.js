@@ -1,4 +1,5 @@
 const passport = require('passport');
+const { compare } = require('bcrypt');
 const { setupStrategy, ensureAuthenticated, _strategyFunc } = require('../auth.controller.js');
 const { findUserByUsername } = require('../../models/user.model.js');
 
@@ -7,6 +8,10 @@ jest.mock('passport', () => ({
     use: jest.fn(),
     serializeUser: jest.fn(),
     deserializeUser: jest.fn(),
+}));
+
+jest.mock('bcrypt', () => ({
+    compare: jest.fn()
 }));
 
 jest.mock('../../models/user.model.js', () => ({
@@ -27,6 +32,8 @@ describe('Authentication Controller', () => {
     });
 
     test('Should call findUserByUsername with the provided username', async() => {
+        const mockedCompare = compare.mockResolvedValue(true);
+        
         const mockedFindUserByUsername = findUserByUsername.mockImplementation(() =>
             Promise.resolve({ username: 'testuser', password: 'testpassword' })
         );
@@ -34,9 +41,11 @@ describe('Authentication Controller', () => {
         const done = jest.fn();
         await _strategyFunc('testuser', 'testpassword', done);
 
+        expect(compare).toHaveBeenCalledWith('testpassword', 'testpassword');
         expect(findUserByUsername).toHaveBeenCalledWith('testuser');
         expect(done).toHaveBeenCalledWith(null, { username: 'testuser', password: 'testpassword' });
 
+        mockedCompare.mockRestore();
         mockedFindUserByUsername.mockRestore();
     });
 
@@ -68,6 +77,7 @@ describe('Authentication Controller', () => {
     });
 
     test('Should call done with user when authentication is successful', async () => {
+        const mockedCompare = compare.mockResolvedValue(true);
         const mockedFindUserByUsername = findUserByUsername.mockImplementation(() => 
             Promise.resolve({ username: 'testuser', password: 'testpassword' })
         );
@@ -75,6 +85,7 @@ describe('Authentication Controller', () => {
         const done = jest.fn();
         await _strategyFunc('testuser', 'testpassword', done);
 
+        expect(compare).toHaveBeenCalledWith('testpassword', 'testpassword');
         expect(findUserByUsername).toHaveBeenCalledWith('testuser');
         expect(done).toHaveBeenCalledWith(null, { username: 'testuser', password: 'testpassword' });
 

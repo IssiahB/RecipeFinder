@@ -18,6 +18,7 @@ router.post('/logout', (req, res) => {
     });
   });
   
+// TODO create create user route
   
  // TODO send whether or not authenticated
 router.get('/auth', ensureAuthenticated, (req, res) => {

@@ -1,5 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('./connection.js');
+const bcrypt = require('bcrypt');
+
+// TODO write test for functions
 
 const User = sequelize.define('users', {
     id: {
@@ -29,13 +32,17 @@ async function createUserTable() {
 
 async function createUser(username, password) {
     try {
-      await createUserTable();
+      await createUserTable(); // Ensure user table created
+
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
   
       const user = await User.create({
         username: username,
-        password: password
+        password: hashedPassword
       });
-      console.log('User created:', user.toJSON());
+
+      console.log('User Created: ', user.username);
       return user.toJSON();
     } catch (error) {
       console.log('Error creating user:', error);
