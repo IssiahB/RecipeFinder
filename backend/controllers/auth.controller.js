@@ -20,10 +20,9 @@ async function _strategyFunc(username, password, done) {
         if (!user || user === null) {
             return done(null, false, { message: 'Incorrect username.' });
         }
-
+        
         // Checks for incorrect password
         const isPasswordMatch = await bcrypt.compare(password, user.password);
-        console.log(isPasswordMatch);
         if (!isPasswordMatch) {
             return done(null, false, { message: 'Incorrect password.' });
         }

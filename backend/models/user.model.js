@@ -2,8 +2,6 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('./connection.js');
 const bcrypt = require('bcrypt');
 
-// TODO write test for functions
-
 const User = sequelize.define('users', {
     id: {
         type: DataTypes.INTEGER,
@@ -23,7 +21,7 @@ const User = sequelize.define('users', {
 
 async function createUserTable() {
     try {
-        await connection.sync();
+        await sequelize.sync();
         console.log('Database synchronized');
     } catch (error) {
         console.log('Error synchronizing database: ', error);
