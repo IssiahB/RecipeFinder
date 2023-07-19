@@ -62,6 +62,21 @@ async function findUserById(givenId) {
     }
 }
 
+async function doesUserExist(givenUsername) {
+    try {
+        const user = await User.findOne({
+            where: {
+                username: givenUsername
+            }
+        });
+
+        return !!user;
+    } catch (error) {
+        console.error('Error checking users existance: ', error);
+        return false;
+    }
+}
+
 async function findUserByUsername(givenUsername) {
     try {
         const query = `SELECT * FROM users WHERE username = '${givenUsername}'`;
@@ -82,5 +97,9 @@ async function findUserByUsername(givenUsername) {
 }
 
 module.exports = {
-    User, createUser, findUserById, findUserByUsername
+    User,
+    createUser,
+    findUserById,
+    findUserByUsername,
+    doesUserExist,
 };

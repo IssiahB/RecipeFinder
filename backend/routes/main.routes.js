@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 
-const { ensureAuthenticated } = require('../controllers/auth.controller.js');
+const { isAuthenticated } = require('../controllers/auth.controller.js');
+const { createNewUser } = require('../controllers/user.controller.js');
 
 router.post('/login', passport.authenticate('local'), (req, res, next) => {
     res.status(200).json({ message: 'Login Successful' });
@@ -10,19 +11,24 @@ router.post('/login', passport.authenticate('local'), (req, res, next) => {
 
 router.post('/logout', (req, res) => {
     req.logout((err) => {
-      if (err) {
-        console.log('Error during logout:', err);
-        res.status(500).json({ message: 'Internal server error' });
-      }
-      res.status(200).json({ message: 'Logout Successful' });
+        if (err) {
+          console.log('Error during logout:', err);
+          res.status(500).json({ message: 'Internal server error' });
+        }
+        res.status(200).json({ message: 'Logout Successful' });
     });
-  });
+});
   
-// TODO create create user route
-  
- // TODO send whether or not authenticated
-router.get('/auth', ensureAuthenticated, (req, res) => {
-    res.sendStatus(403);
+router.post('/user', (req, res) => {
+    try {
+      createNewUser(req, res);
+    } catch (error) {
+      //console.log(error);
+    }
+});
+
+router.get('/history', isAuthenticated, (req, res) => {
+    res.sendStatus(200);
 });
 
 module.exports = router;

@@ -4,7 +4,7 @@ const path = require('path');
 const sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: path.join(__dirname, 'database.sqlite'),
-    logging: console.log // Output logs to the console
+    //logging: console.log // Output logs to the console
 });
 
 sequelize.authenticate()

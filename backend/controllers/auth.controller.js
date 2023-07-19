@@ -56,13 +56,16 @@ function setupStrategy() {
     });
 }
 
-function ensureAuthenticated(req, res, next) {
+function isAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
-        return next();
+      // If the user is authenticated, proceed to the next middleware
+      return next();
+    } else {
+      // If the user is not authenticated, send an unauthorized response
+      return res.status(401).json({ message: "Unauthorized" });
     }
-    
-}
+  }
 
 module.exports = {
-    setupStrategy, ensureAuthenticated, _strategyFunc
+    setupStrategy, isAuthenticated, _strategyFunc
 }
